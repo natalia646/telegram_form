@@ -1,27 +1,37 @@
-import React from "react";
-import axios from "axios";
+import React, { useState } from "react";
+import sendMessage from "./Telegram";
 
 export default function Form() {
-  const token = process.env.REACT_APP_TOKEN;
+  const [name, setName] = useState(" ");
+  const [email, setEmail] = useState(" ");
 
-  const getChatId = async () => {
-    const resp = await axios.get(
-      `https://api.telegram.org/bot${token}/getUpdates`
-    );
-    console.log(resp.data.result[0].message.chat.id);
+  const handleSubmit = async () => {
+    console.log(name, email);
+    try {
+      const message = `
+        Name: ${name}
+        Email: ${email}
+      `;
+      await sendMessage(message);
+    } catch (e) {
+      return e;
+    }
   };
-  
-  getChatId();
-
-  const resp = axios.post(`https://api.telegram.org/bot${token}/sendMessage`, {
-    chat_id: 893081271,
-    text: "Hello World",
-  });
 
   return (
-    <form>
-      <input type="name" placeholder="Name"></input>
-      <input type="email" placeholder="Email"></input>
+    <form onSubmit={handleSubmit}>
+      <input
+        type="name"
+        placeholder="Name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      ></input>
+      <input
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      ></input>
       <input type="submit" value="Send"></input>
     </form>
   );
